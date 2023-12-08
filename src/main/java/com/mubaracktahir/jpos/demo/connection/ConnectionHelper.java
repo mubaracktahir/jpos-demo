@@ -46,6 +46,7 @@ public class ConnectionHelper {
         try {
             isoMsg.setPackager(new ISO8583Packager());
             isoMsg.unpack(isoRequest);
+            isoMsg.set(0,"0810");
             setRandomValue(isoMsg, 58);
             isoMsg.set(39, "00");
             return isoMsg;
