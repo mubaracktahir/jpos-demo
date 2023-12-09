@@ -1,7 +1,7 @@
 package com.mubaracktahir.jpos.demo.connection;
 
-import com.mubaracktahir.jpos.demo.Utils;
 import com.mubaracktahir.jpos.demo.iso8583.ISO8583Packager;
+import com.mubaracktahir.jpos.demo.iso8583.IsoMessage;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class ConnectionHelper {
             while (true) {
                 clientSocket = serverSocket.accept();
                 byte[] isoRequest = handleClientRequest(clientSocket);
-                ISOMsg isoResponse = getIsoResponse(isoRequest);
+                IsoMessage isoResponse = getIsoResponse(isoRequest);
                 assert isoResponse != null;
                 respond(isoResponse.pack());
             }
@@ -54,13 +54,11 @@ public class ConnectionHelper {
         }
     }
 
-    private ISOMsg getIsoResponse(byte[] isoRequest) {
-        String hex = Utils.bytesToHexString(isoRequest);
-        String finalHex = hex.substring(4, hex.length());
-        ISOMsg isoMsg = new ISOMsg();
+    private IsoMessage getIsoResponse(byte[] isoRequest) {
+        IsoMessage isoMsg = new IsoMessage();
         try {
             isoMsg.setPackager(new ISO8583Packager());
-            isoMsg.unpack(Utils.hexStringToBytes(finalHex));
+            isoMsg.unpack(isoRequest);
             System.out.println("-----------------REQUEST----------------");
             log(isoMsg);
             isoMsg.set(0, "0810");
